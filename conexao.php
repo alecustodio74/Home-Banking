@@ -6,7 +6,7 @@
     $host = 'localhost';
     $dbname = 'banking';
     $usuario = 'root';
-    $senha = '@Arcs1974'; //usuario e senha no MySQL Workbank ou outro banco como o Xampp
+    $senha = '123456'; //usuario e senha no MySQL Workbank ou outro banco como o Xampp
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $usuario, $senha);

@@ -8,6 +8,8 @@ session_start();
 require_once("conexao.php");
 require_once("admin_header.php");
 
+
+
 // Dados do gerente logado (agora sabemos que estão definidos)
 $gerente_id = $_SESSION['gerente_id'];
 $agencia_id = $_SESSION['agencia_id'];
@@ -35,9 +37,66 @@ function buscarDadosGerente($pdo, $gerente_id) {
     }
 }
 
+// Função para buscar os clientes da agência do gerente
+function buscarClientesDaAgencia($pdo, $agencia_id) {
+    try {
+        $stmt = $pdo->prepare("
+            SELECT DISTINCT cl.id, cl.nome, cl.email
+            FROM clientes cl
+            INNER JOIN contas c ON cl.id = c.cliente_id
+            WHERE c.agencia_id = :agencia_id
+        ");
+        $stmt->bindParam(':agencia_id', $agencia_id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    } catch (PDOException $e) {
+        error_log("Erro PDO ao buscar clientes da agência: " . $e->getMessage());
+        return [];
+    }
+}
+
+// Função para buscar as contas da agência do gerente
+function buscarContasDaAgencia($pdo, $agencia_id) {
+    try {
+        $stmt = $pdo->prepare("
+            SELECT ct.id, cl.nome as nome_cliente, ct.tipo, ct.saldo, ct.data_criacao
+            FROM contas ct
+            INNER JOIN clientes cl ON ct.cliente_id = cl.id
+            WHERE ct.agencia_id = :agencia_id
+        ");
+        $stmt->bindParam(':agencia_id', $agencia_id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    } catch (PDOException $e) {
+        error_log("Erro PDO ao buscar contas da agência: " . $e->getMessage());
+        return [];
+    }
+}
+
+// Função para buscar os empréstimos da agência do gerente
+function buscarEmprestimosDaAgencia($pdo, $agencia_id) {
+    try {
+        $stmt = $pdo->prepare("
+            SELECT e.id, cl.nome as nome_cliente, e.valor, e.data_inicio, e.data_fim, e.status
+            FROM emprestimos e
+            INNER JOIN contas ct ON e.conta_id = ct.id
+            INNER JOIN clientes cl ON ct.cliente_id = cl.id
+            WHERE ct.agencia_id = :agencia_id
+        ");
+        $stmt->bindParam(':agencia_id', $agencia_id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    } catch (PDOException $e) {
+        error_log("Erro PDO ao buscar empréstimos da agência: " . $e->getMessage());
+        return [];
+    }
+}
+
 // --- BUSCA DE DADOS PARA A PÁGINA ---
 $dados_gerente = buscarDadosGerente($pdo, $gerente_id);
+$clientes = buscarClientesDaAgencia($pdo, $agencia_id);
 $contas = buscarContasDaAgencia($pdo, $agencia_id);
+$emprestimos = buscarEmprestimosDaAgencia($pdo, $agencia_id);
 
 // Se os dados do gerente não puderem ser recuperados, exibe uma mensagem de erro
 if (!$dados_gerente) {
@@ -60,11 +119,11 @@ require_once("admin_header.php");
         <div class="dashboard-container">
             <div class="dashboard-item">
                 <h2><i class="fas fa-user-plus"></i> Cadastrar Cliente</h2>
-                <a href="admin_registrar.php">Registrar novo cliente</a>
+                <a href="cadastrar_cliente.php">Registrar novo cliente</a>
             </div>
             <div class="dashboard-item">
                 <h2><i class="fas fa-credit-card"></i> Cadastrar Conta</h2>
-                <a href="admin_criarconta.php">Criar nova conta bancária</a>
+                <a href="criar_conta.php">Criar nova conta bancária</a>
             </div>
             <div class="dashboard-item">
                 <h2><i class="fas fa-search"></i> Selecionar Cliente</h2>
@@ -99,6 +158,29 @@ require_once("admin_header.php");
             </div>
         </div>
 
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">Clientes da Agência</div>
+            <div class="card-body">
+                <?php if (empty($clientes)): ?>
+                    <p class="text-center">Nenhum cliente encontrado nesta agência.</p>
+                <?php else: ?>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead><tr><th>ID</th><th>Nome</th><th>Email</th></tr></thead>
+                            <tbody>
+                                <?php foreach ($clientes as $c): ?>
+                                    <tr>
+                                        <td><?= htmlspecialchars($c['id']) ?></td>
+                                        <td><?= htmlspecialchars($c['nome']) ?></td>
+                                        <td><?= htmlspecialchars($c['email']) ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
 
         <div class="card mb-4">
             <div class="card-header bg-success text-white">Contas da Agência</div>
@@ -126,5 +208,30 @@ require_once("admin_header.php");
             </div>
         </div>
 
-       
+        <div class="card mb-4">
+            <div class="card-header bg-warning text-white">Empréstimos da Agência</div>
+            <div class="card-body">
+                <?php if (empty($emprestimos)): ?>
+                    <p class="text-center">Nenhum empréstimo encontrado nesta agência.</p>
+                <?php else: ?>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead><tr><th>ID</th><th>Cliente</th><th>Valor</th><th>Início</th><th>Fim</th><th>Status</th></tr></thead>
+                            <tbody>
+                                <?php foreach ($emprestimos as $e): ?>
+                                    <tr>
+                                        <td><?= htmlspecialchars($e['id']) ?></td>
+                                        <td><?= htmlspecialchars($e['nome_cliente']) ?></td>
+                                        <td>R$ <?= number_format($e['valor'], 2, ',', '.') ?></td>
+                                        <td><?= htmlspecialchars($e['data_inicio']) ?></td>
+                                        <td><?= htmlspecialchars($e['data_fim']) ?></td>
+                                        <td><?= htmlspecialchars($e['status']) ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
 <?php require_once("footer.php"); ?>
