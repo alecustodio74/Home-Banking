@@ -4,6 +4,11 @@
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
+
+// Obtém o nome do cliente da sessão para exibir na barra de navegação
+// Usa 'nome_gerente' que é definido em admin_login.php
+$cliente_nome = isset($_SESSION['cliente_nome']) ? $_SESSION['cliente_nome'] : 'Cliente';
+
 ?>
 
 <!DOCTYPE html>
@@ -65,7 +70,7 @@ if (session_status() == PHP_SESSION_NONE) {
                     <?php if (isset($_SESSION['cliente_id'])): ?>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="menuConta" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-user"></i> Minha Conta
+                                <i class="fas fa-user"></i> Olá, <?= htmlspecialchars($cliente_nome) ?>
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="menuConta">
                                 <li><a class="dropdown-item" href="criar_conta.php"><i class="fas fa-plus-circle"></i> Criar Conta</a></li>

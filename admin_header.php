@@ -221,7 +221,7 @@ $gerente_nome = isset($_SESSION['gerente_nome']) ? $_SESSION['gerente_nome'] : '
                         <a class="nav-link" href="admin_criarconta.php">Cadastrar Conta</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="exibir_extrato.php">Exibir Extrato</a>
+                        <a class="nav-link" href="admin_extrato.php">Exibir Extrato</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="listar_clientes.php">Listar Clientes</a>

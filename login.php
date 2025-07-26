@@ -6,12 +6,18 @@ require_once("conexao.php");
 session_start();
 
 // Verifica se o usuário já está logado
-if (isset($_SESSION['cliente_id'])) {
+//if (isset($_SESSION['cliente'])) {
+if (isset($_SESSION['cliente_id']) && isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'cliente') {
     header("Location: index.php"); // Redireciona para a página inicial se já estiver logado
     exit();
 }
 
+//Variavel para armazenar o tipo de usuário para deslogar apenas cliente e não o gerente
+//$_SESSION['user_type'] = 'cliente_id';
+
+// Variável para armazenar mensagens de erro
 $mensagem_erro = "";
+$email = ""; // Inicializa a variável $email para evitar erros de undefined variable
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
@@ -21,7 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $mensagem_erro = "Por favor, preencha todos os campos.";
     } else {
         try {
-            $stmt = $pdo->prepare("SELECT id, senha FROM clientes WHERE email = :email");
+            $stmt = $pdo->prepare("SELECT id, nome, senha FROM clientes WHERE email = :email");
             $stmt->bindParam(':email', $email);
             $stmt->execute();
             $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -29,7 +35,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($resultado && password_verify($senha, $resultado['senha'])) {
                 // Senha correta, inicia a sessão
                 $_SESSION['cliente_id'] = $resultado['id'];
-                $_SESSION['email'] = $email; // Pode ser útil armazenar o email também
+                $_SESSION['cliente_nome'] = $resultado['nome']; //
+                $_SESSION['cliente_email'] = $resultado['email']; // Pode ser útil armazenar o email também
                 header("Location: index.php"); // Redireciona para a página inicial
                 exit();
             } else {

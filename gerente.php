@@ -37,7 +37,6 @@ function buscarDadosGerente($pdo, $gerente_id) {
 
 // --- BUSCA DE DADOS PARA A PÁGINA ---
 $dados_gerente = buscarDadosGerente($pdo, $gerente_id);
-$contas = buscarContasDaAgencia($pdo, $agencia_id);
 
 // Se os dados do gerente não puderem ser recuperados, exibe uma mensagem de erro
 if (!$dados_gerente) {
@@ -72,7 +71,7 @@ require_once("admin_header.php");
             </div>
             <div class="dashboard-item">
                 <h2><i class="fas fa-file-alt"></i> Exibir Extrato</h2>
-                <a href="exibir_extrato.php">Ver extrato de cliente</a>
+                <a href="admin_extrato.php">Ver extrato de cliente</a>
             </div>
             <div class="dashboard-item">
                 <h2><i class="fas fa-users"></i> Listar Clientes</h2>
@@ -98,33 +97,5 @@ require_once("admin_header.php");
                 <?php endif; ?>
             </div>
         </div>
-
-
-        <div class="card mb-4">
-            <div class="card-header bg-success text-white">Contas da Agência</div>
-            <div class="card-body">
-                <?php if (empty($contas)): ?>
-                    <p class="text-center">Nenhuma conta encontrada nesta agência.</p>
-                <?php else: ?>
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead><tr><th>ID</th><th>Cliente</th><th>Tipo</th><th>Saldo</th><th>Data Criação</th></tr></thead>
-                            <tbody>
-                                <?php foreach ($contas as $c): ?>
-                                    <tr>
-                                        <td><?= htmlspecialchars($c['id']) ?></td>
-                                        <td><?= htmlspecialchars($c['nome_cliente']) ?></td>
-                                        <td><?= htmlspecialchars($c['tipo']) ?></td>
-                                        <td>R$ <?= number_format($c['saldo'], 2, ',', '.') ?></td>
-                                        <td><?= htmlspecialchars($c['data_criacao']) ?></td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                <?php endif; ?>
-            </div>
-        </div>
-
-       
+     
 <?php require_once("footer.php"); ?>

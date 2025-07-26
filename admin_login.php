@@ -7,13 +7,18 @@ require_once("conexao.php");
 // Inicia a sessão
 session_start();
 
-// Verifica se o usuário já está logado
-if (isset($_SESSION['gerente_id'])) {
+// Verifica se o usuário é um gerente e está logado
+//if (isset($_SESSION['gerente_id'])) {
+if (isset($_SESSION['gerente_id']) && isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'gerente') {
     header("Location: gerente.php"); // Redireciona para a página do gerente se já estiver logado
     exit();
 }
 
+$_SESSION['user_type'] = 'gerente_id'; // Variável para armazenar o tipo de usuário para deslogar apenas gerente e não o cliente
+
+// Variável para armazenar mensagens de erro
 $mensagem_erro = "";
+$email = ""; // Inicializa a variável $email para evitar erros de undefined variable
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
@@ -21,6 +26,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (empty($email) || empty($senha)) {
         $mensagem_erro = "Por favor, preencha todos os campos.";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $mensagem_erro = "Email inválido.";
     } else {
         try {
             // CORREÇÃO: Seleciona também o agencia_id da tabela gerentes
@@ -33,9 +40,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Senha correta, inicia a sessão
                 $_SESSION['gerente_id'] = $resultado['id'];
                 $_SESSION['gerente_nome'] = $resultado['nome']; // Use 'nome_gerente' para consistência com admin_header.php
-                $_SESSION['email'] = $resultado['email'];
+                $_SESSION['gerente_email'] = $resultado['email'];
                 $_SESSION['agencia_id'] = $resultado['agencia_id']; // CORREÇÃO: Armazena o agencia_id na sessão
-
+                $_SESSION['user_type'] = 'gerente'; // Define o tipo de usuário
                 header("Location: gerente.php"); // Redireciona para a página do gerente
                 exit();
             } else {

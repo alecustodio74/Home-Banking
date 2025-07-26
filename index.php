@@ -2,12 +2,13 @@
 session_start();
 require_once("conexao.php");
 
-// Verifica se o usuário está logado
-if (!isset($_SESSION['cliente_id'])) {
+// Verifica se o usuário está logado e se é um cliente
+//if (!isset($_SESSION['cliente_id']) || $_SESSION['user_type'] !== 'cliente_id') {
+//if (!isset($_SESSION['cliente_id']) || !isset($_SESSION['user_type']) || $_SESSION['user_type'] !== 'cliente') {
     // Se não estiver logado, redireciona para a página de login
-    header("Location: login.php");
-    exit();
-}
+    //header("Location: login.php");
+    //exit();
+//}
 
 // Obtém o saldo da conta do usuário logado
 try {
