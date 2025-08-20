@@ -110,7 +110,7 @@ require_once("admin_header.php");
 <?php endif; ?>
 
 <div class="card mb-4">
-    <div class="card-header bg-info text-white">Clientes da Agência</div>
+    <div class="card-header bg-info text-white">Clientes da Agência <?= $agencia_id ?> </div>
     <div class="card-body">
         <?php if (empty($clientes)): ?>
             <p class="text-center">Nenhum cliente encontrado nesta agência.</p>
@@ -122,12 +122,13 @@ require_once("admin_header.php");
                             <th>ID Cliente</th>
                             <th>Nome Cliente</th>
                             <th>Email Cliente</th>
-                            <th>Número Conta</th>
+                            <!-- <th>Número Conta</th> -->
                             <th>Tipo Conta</th>
-                            <th>Saldo Conta</th>
+                            <!-- <th>Saldo Conta</th> -->
                             <th>Nome Agência</th>
                             <th>Cidade Agência</th>
-                            <th>Nome Banco</th>
+                            <!-- <th>Nome Banco</th> -->
+                            <!-- <th>Data Criação</th> -->
                         </tr>
                     </thead>
                     <tbody>
@@ -136,12 +137,13 @@ require_once("admin_header.php");
                                 <td><?= htmlspecialchars($c['cliente_id']) ?></td>
                                 <td><?= htmlspecialchars($c['nome_cliente']) ?></td>
                                 <td><?= htmlspecialchars($c['email_cliente']) ?></td>
-                                <td><?= htmlspecialchars($c['numero_conta']) ?></td>
+                                <!-- <td><?= htmlspecialchars($c['numero_conta']) ?></td> -->
                                 <td><?= htmlspecialchars($c['tipo_conta']) ?></td>
-                                <td>R$ <?= number_format($c['saldo_conta'], 2, ',', '.') ?></td>
+                                <!-- <td>R$ <?= number_format($c['saldo_conta'], 2, ',', '.') ?></td> -->
                                 <td><?= htmlspecialchars($c['nome_agencia']) ?></td>
                                 <td><?= htmlspecialchars($c['cidade_agencia']) ?></td>
-                                <td><?= htmlspecialchars($c['nome_banco']) ?></td>
+                                <!-- <td><?= htmlspecialchars($c['nome_banco']) ?></td> -->
+                                <!-- <td><?= htmlspecialchars($c['data_criacao']) ?></td> -->
                             </tr>
                         <?php endforeach; ?>
                     </tbody>

@@ -91,7 +91,7 @@ require_once("admin_header.php");
                 <?php if ($dados_gerente): ?>
                     <p><strong>Nome:</strong> <?= htmlspecialchars($dados_gerente['nome']) ?></p>
                     <p><strong>Email:</strong> <?= htmlspecialchars($dados_gerente['email']) ?></p>
-                    <p><strong>Agência:</strong> <?= htmlspecialchars($dados_gerente['nome_agencia']) ?> - <?= htmlspecialchars($dados_gerente['cidade_agencia']) ?></p>
+                    <p><strong>Agência:</strong> <?= $agencia_id ?> - <?= htmlspecialchars($dados_gerente['nome_agencia']) ?> - <?= htmlspecialchars($dados_gerente['cidade_agencia']) ?></p>
                 <?php else: ?>
                     <p class="text-center">Erro ao recuperar os dados do gerente.</p>
                 <?php endif; ?>
